@@ -65,6 +65,44 @@ func GetRepeaterCall(rptrFile string, rptID string) string {
 	return (cSign.String())
 }
 
+// GetAliasString returns a full alias string for a given user ID. Needs
+// to be cleaned up, for sure. Probably would do better with a variadic
+// function but this is my first attempt at it. It works for now.
+func GetAliasString(userFile string, userID string) string {
+	input, err := ioutil.ReadFile(userFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	userLookup := string(input)
+	s := []string{}
+	uSign := gjson.Get(userLookup, `users.#(id=`+userID+`).callsign`)
+	s = append(s, uSign.String())
+	uCity := gjson.Get(userLookup, `users.#(id=`+userID+`).city`)
+	s = append(s, uCity.String())
+	uState := gjson.Get(userLookup, `users.#(id=`+userID+`).state`)
+	s = append(s, uState.String())
+	result := strings.Join(s, ", ")
+	return result
+}
+
+// GetAliasShort returns a user's callsign and name. Needs to be cleaned
+// up, for sure. Probably would do better with a variadic function but
+// this is my first attempt at it. It works for now.
+func GetAliasShort(userFile string, userID string) string {
+	input, err := ioutil.ReadFile(userFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	userLookup := string(input)
+	s := []string{}
+	uSign := gjson.Get(userLookup, `users.#(id=`+userID+`).callsign`)
+	s = append(s, uSign.String())
+	uName := gjson.Get(userLookup, `users.#(id=`+userID+`).name`)
+	s = append(s, uName.String())
+	result := strings.Join(s, ", ")
+	return result
+}
+
 // WriteCounter counts the number of bytes written to it. It implements to the
 // io.Writer interface and we can pass this into io.TeeReader() which will
 // report progress on each write cycle.
